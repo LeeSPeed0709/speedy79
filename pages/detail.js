@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
+import Head from '../components/head'
 
 export default class extends React.Component {
     static async getInitialProps({ query }) {
@@ -10,6 +11,7 @@ export default class extends React.Component {
         let { name } = this.props;
         return (
             <div>
+                <Head title={name} />
                 <div>{name}</div>
                 <Link href="/">
                     <a>回主页</a>

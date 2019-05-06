@@ -1,4 +1,5 @@
 import React from 'react'
+import Head from '../components/head'
 import Link from 'next/link'
 import axios from 'axios'
 
@@ -18,6 +19,7 @@ export default class extends React.Component {
 
         return (
             <div>
+                <Head title="list page" />
                 <ul>
                     <li className="row-head">
                         <div className="cell">市场</div>
@@ -45,6 +47,11 @@ export default class extends React.Component {
                 }
                 </ul>
                 <style jsx>{`
+                    :global(body) {
+                        margin: 0;
+                        font-family: -apple-system, BlinkMacSystemFont, Avenir Next, Avenir,
+                        Helvetica, sans-serif;
+                    }
                     ul {
                         width: 1200px;
                         margin: 0 auto;
