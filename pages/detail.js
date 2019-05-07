@@ -17,18 +17,15 @@ export default class extends React.Component {
 
     connectWebSocket() {
         this.ws = new WebSocket(`wss://stream.binance.cloud:9443/ws/${this.props.name.toLowerCase()}@depth20`);
-
         this.ws.onopen = () => {
             console.log('open');
             this.setState({ isConnecting: true });
         }
-
         this.ws.onmessage = res => {
             this.setState({
                 data: JSON.parse(res.data)
             })
         }
-
         this.ws.onclose = () => {
             console.log('close');
             this.setState({ isConnecting: false });
