@@ -1,5 +1,4 @@
 import React from 'react'
-import Link from 'next/link'
 import Head from '../components/head'
 
 export default class extends React.Component {
@@ -64,9 +63,6 @@ export default class extends React.Component {
                         )
                     })
                 }
-                {/* <Link href="/">
-                    <a>回主页</a>
-                </Link> */}
                 <style jsx>{`
                 .section {
                     overflow: hidden;
