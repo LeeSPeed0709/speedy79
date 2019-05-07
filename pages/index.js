@@ -1,6 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import axios from 'axios'
+import PropTypes from 'prop-types';
 
 import Head from '../components/head'
 
@@ -12,6 +13,7 @@ export default class extends React.Component {
         }
         catch(err) {
             console.log(err);
+            return []
         }
     }
 
