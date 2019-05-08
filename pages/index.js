@@ -1,17 +1,28 @@
 import React from 'react'
-import Head from '../components/head'
 import Link from 'next/link'
 import axios from 'axios'
+import PropTypes from 'prop-types';
+
+import Head from '../components/head'
 
 export default class extends React.Component {
     static async getInitialProps() {
-        return axios.get('https://www.binance.co/exchange/public/product')
-            .then(res => {
-                return { data: res.data.data };
-            })
-            .catch(err => {
-                console.log(err);
-            });
+        try {
+            const res = await axios.get('https://www.binance.co/exchange/public/product')
+            return { data: res.data && res.data.data }
+        }
+        catch(err) {
+            console.log(err);
+            return []
+        }
+    }
+
+    static propTypes = {
+      data: PropTypes.array
+    }
+
+    static defaultProps = {
+      data: []
     }
 
     render() {
@@ -29,21 +40,19 @@ export default class extends React.Component {
                         <div className="cell right">24h成交量</div>
                     </li>
                     {
-                        data && data.length > 0 && data.map(item => {
-                            return (
-                                <li key={item.symbol}>
-                                    <Link href={`/detail?name=${item.symbol}`}>
-                                        <a className="row">
-                                            <div className="cell">{item.baseAsset}/{item.quoteAsset}</div>
-                                            <div className="cell">{item.quoteAssetName}</div>
-                                            <div className="cell right">{item.high}</div>
-                                            <div className="cell right">{item.low}</div>
-                                            <div className="cell right">{item.tradedMoney}</div>
-                                        </a>
-                                    </Link>
-                                </li>
-                            )
-                        })
+                        data && data.map(item =>
+                            <li key={item.symbol}>
+                                <Link href={`/detail?name=${item.symbol}`}>
+                                    <a className="row">
+                                        <div className="cell">{item.baseAsset}/{item.quoteAsset}</div>
+                                        <div className="cell">{item.quoteAssetName}</div>
+                                        <div className="cell right">{item.high}</div>
+                                        <div className="cell right">{item.low}</div>
+                                        <div className="cell right">{item.tradedMoney}</div>
+                                    </a>
+                                </Link>
+                            </li>
+                        )
                     }
                 </ul>
                 <style jsx>{`
