@@ -1,81 +1,70 @@
 import React from 'react'
 import Head from '../components/head'
+import PriceLine from '../components/priceLine';
 
 export default class extends React.Component {
-    static async getInitialProps({ query }) {
-        return { name: query.name };
-    }
+  static async getInitialProps({ query }) {
+    return { name: query.name };
+  }
 
-    state = {
-        data: {}
-    }
+  state = {
+    data: {}
+  }
 
-    componentDidMount() {
-        this.connectWebSocket();
-    }
+  componentDidMount() {
+    this.connectWebSocket();
+  }
 
-    connectWebSocket() {
-        this.ws = new WebSocket(`wss://stream.binance.cloud:9443/ws/${this.props.name.toLowerCase()}@depth20`);
-        this.ws.onopen = () => {
-            console.log('open');
-            this.setState({ isConnecting: true });
+  connectWebSocket() {
+    this.ws = new WebSocket(`wss://stream.binance.cloud:9443/ws/${this.props.name.toLowerCase()}@depth20`);
+    this.ws.onopen = () => {
+      console.log('open');
+      this.setState({ isConnecting: true });
+    }
+    this.ws.onmessage = res => {
+      this.setState({
+        data: JSON.parse(res.data)
+      })
+    }
+    this.ws.onclose = () => {
+      console.log('close');
+      this.setState({ isConnecting: false });
+    }
+  }
+
+  breakConnect() {
+    this.ws.close();
+  }
+
+  render() {
+    let { name } = this.props;
+    let { data, isConnecting } = this.state;
+    return (
+      <div>
+        <Head title={name} />
+        {
+          isConnecting ?
+            <button onClick={this.breakConnect.bind(this)}>断开</button> :
+            <button onClick={this.connectWebSocket.bind(this)}>连接</button>
         }
-        this.ws.onmessage = res => {
-            this.setState({
-                data: JSON.parse(res.data)
-            })
+        <div>{name}</div>
+        <div>买</div>
+        {
+          data.bids && data.bids.map(item => {
+            return (
+              <PriceLine key={`${item[0] - item[1]}-${new Date().getTime()}`} data={item} />
+            )
+          })
         }
-        this.ws.onclose = () => {
-            console.log('close');
-            this.setState({ isConnecting: false });
+        <div>卖</div>
+        {
+          data.asks && data.asks.map(item => {
+            return (
+              <PriceLine key={`${item[0] - item[1]}`} data={item} />
+            )
+          })
         }
-    }
-
-    breakConnect() {
-        this.ws.close();
-    }
-
-    render() {
-        let { name } = this.props;
-        let { data, isConnecting } = this.state;
-        return (
-            <div>
-                <Head title={name} />
-                {
-                    isConnecting ?
-                        <button onClick={this.breakConnect.bind(this)}>断开</button> :
-                        <button onClick={this.connectWebSocket.bind(this)}>连接</button>
-                }
-                <div>{name}</div>
-                <div>买</div>
-                {
-                    data.bids && data.bids.map((item, index) => {
-                        return (
-                            <div key={`${index}-${new Date().getTime()}`} className="section"><div className="price">{item[0]}</div><div className="quantity">{item[1]}</div></div>
-                        )
-                    })
-                }
-                <div>卖</div>
-                {
-                    data.asks && data.asks.map((item, index) => {
-                        return (
-                            <div key={`${index}-${new Date().getTime()}`} className="section"><div className="price">{item[0]}</div><div className="quantity">{item[1]}</div></div>
-                        )
-                    })
-                }
-                <style jsx>{`
-                .section {
-                    overflow: hidden;
-                    width: 300px;
-                }
-                .price {
-                    float: left;
-                }
-                .quantity {
-                    float: right;
-                }
-                `}</style>
-            </div>
-        )
-    }
+      </div>
+    )
+  }
 }
